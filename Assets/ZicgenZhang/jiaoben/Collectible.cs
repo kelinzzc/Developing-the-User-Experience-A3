@@ -27,6 +27,7 @@ public class Collectible : MonoBehaviour
             audioSource.PlayOneShot(collectSound, safeVolume);
             
             Destroy(tempGO, collectSound.length + 0.1f);
+            CollectibleManager.Instance.CollectItem();
             
             Destroy(gameObject);
         }
