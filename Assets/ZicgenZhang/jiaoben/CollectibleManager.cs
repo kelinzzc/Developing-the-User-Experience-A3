@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 文件名必须为 Game.cs，类名必须为 Game
-public class CollectibleManager : MonoBehaviour  // 类名从 GameManager 改为 Game
+
+public class CollectibleManager : MonoBehaviour  
 {
     public static CollectibleManager Instance;    // 同步修改静态实例类型
 
     [Header("摄像机设置")]
-    public Camera playerCamera;    // 拖入主摄像机
-    public Camera victoryCamera;   // 拖入胜利摄像机
+    public Camera playerCamera;    // 主摄像机
+    public Camera victoryCamera;   // 胜利摄像机
 
     [Header("UI设置")]
     public GameObject victoryPanel;
@@ -38,7 +38,7 @@ public class CollectibleManager : MonoBehaviour  // 类名从 GameManager 改为
 
     void UpdateCounter()
     {
-        counterText.text = $"剩余物品: {totalCollectibles - collectedCount}/{totalCollectibles}";
+        counterText.text = $"surplus: {totalCollectibles - collectedCount}/{totalCollectibles}";
     }
 
     void ShowVictory()
