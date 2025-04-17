@@ -68,4 +68,5 @@ public class jingtou : MonoBehaviour
     {
         _look = value.Get<Vector2>();
     }
+
 }

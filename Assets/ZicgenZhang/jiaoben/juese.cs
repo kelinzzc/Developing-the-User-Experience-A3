@@ -5,6 +5,11 @@ using UnityEngine.InputSystem;
 
 public class juese : MonoBehaviour
 {
+    [Header("动画设置")]
+    [Tooltip("拖入跳跃动画片段")]
+    public AnimationClip jumpAnimation;
+    [Tooltip("跳跃动画过渡时间")]
+    public float jumpTransitionTime = 0.1f;
     private CharacterController _controller;
     private GameObject _mainCamera;
     private Animator _animator;
@@ -13,7 +18,9 @@ public class juese : MonoBehaviour
     public float moveSpeed = 5f;             // 基础移动速度
     public float RotationSmoothTime = 0.1f;
     public float jumpForce = 6f;
-    
+    private int _jumpAnimationHash;
+    private bool _isJumping;
+
     // 新增变量声明
     private Vector2 _move;
     private float _targetRot;
@@ -29,6 +36,8 @@ public class juese : MonoBehaviour
         
         _controller = GetComponent<CharacterController>();
         _animator = GetComponent<Animator>();
+        if(jumpAnimation != null)
+            _jumpAnimationHash = Animator.StringToHash(jumpAnimation.name);
     }
 
     void Update()
@@ -52,7 +61,16 @@ public class juese : MonoBehaviour
     void HandleJump()
     {
         if (Input.GetKeyDown(KeyCode.Space) && _controller.isGrounded)
+        {
             _verticalVelocity = jumpForce;
+            
+            if(jumpAnimation != null)
+            {
+                // 播放跳跃动画
+                _animator.CrossFade(_jumpAnimationHash, jumpTransitionTime);
+                _isJumping = true;
+            }
+        }
     }
 
     // 处理移动
@@ -83,9 +101,20 @@ public class juese : MonoBehaviour
     // 更新动画参数
     void UpdateAnimation()
     {
-        float axisY = _animator.GetFloat("AxisY");
-        axisY = Mathf.MoveTowards(axisY, _move.magnitude, 5f * Time.deltaTime);
+        // 原有移动动画逻辑
+        float axisY = Mathf.MoveTowards(
+            _animator.GetFloat("AxisY"), 
+            _move.magnitude, 
+            5f * Time.deltaTime
+        );
         _animator.SetFloat("AxisY", axisY);
+
+        // 自动结束跳跃状态
+        if(_isJumping && _controller.isGrounded)
+        {
+            _isJumping = false;
+            _animator.Play("Base Layer.Locomotion"); // 返回基础动画状态
+        }
     }
 
     // 输入回调
