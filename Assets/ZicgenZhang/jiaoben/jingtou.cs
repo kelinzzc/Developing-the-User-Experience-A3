@@ -1,102 +1,60 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 public class jingtou : MonoBehaviour
 {
-    [Header("摄像机组件")]
+    private GameObject _mainCamera;
+    
+    [Header("Cinemachine")]
+    [Tooltip("Follow the target")]
     public GameObject CameraTarget;
-    [Tooltip("主摄像机标签")] 
-    public string mainCameraTag = "MainCamera";
     
-    [Header("旋转限制")]
-    [Range(-90f, 90f)] public float TopClamp = 70.0f;
-    [Range(-90f, 90f)] public float BottomClamp = -30.0f;
+    [Header("Rotation limitation")]
+    [Tooltip("Maximum upward tilt Angle")]
+    public float TopClamp = 70.0f;
+    [Tooltip("The maximum Angle of descent")]
+    public float BottomClamp = -30.0f;
     
-    [Header("控制参数")]
-    [Range(0.1f, 2f)] public float lookSensitivity = 0.5f;
-    [Tooltip("WebGL点击提示面板")] 
-    public GameObject webGLTouchPanel;
+    [Header("Control parameters")]
+    [Tooltip("Mouse sensitivity")]
+    public float lookSensitivity = 0.5f;
 
-    // 私有变量
+    private const float _threshold = 0.01f;
     private float _cinemachineTargetYaw;
     private float _cinemachineTargetPitch;
     private Vector2 _look;
-    private bool _hasFocus;
-
-    #if UNITY_WEBGL
-    private const float WebGLFOV = 60f;
-    #endif
 
     void Start()
     {
-        // 初始化摄像机参数
-        var targetRotation = CameraTarget.transform.rotation.eulerAngles;
-        _cinemachineTargetYaw = targetRotation.y;
-        _cinemachineTargetPitch = targetRotation.x;
-
-        // WebGL特定初始化
-        #if UNITY_WEBGL
-        if(webGLTouchPanel != null)
-        {
-            webGLTouchPanel.SetActive(true);
-            Application.targetFrameRate = 60;
-            Cursor.lockState = CursorLockMode.None;
-        }
-        Camera.main.fieldOfView = WebGLFOV;
-        #endif
+        if (_mainCamera == null)
+            _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
+        
+        // 初始化目标角度
+        _cinemachineTargetYaw = CameraTarget.transform.rotation.eulerAngles.y;
+        _cinemachineTargetPitch = CameraTarget.transform.rotation.eulerAngles.x;
     }
 
-    void Update()
+    private void Update()
     {
-        #if UNITY_WEBGL
-        if(!_hasFocus) return;
-        #endif
-
-        HandleCameraRotation();
-    }
-
-    void HandleCameraRotation()
-    {
-        if (_look.sqrMagnitude >= 0.01f)
+        // 处理输入
+        if (_look.sqrMagnitude >= _threshold)
         {
-            float deltaTimeMultiplier = 1.0f / Time.deltaTime;
-            
-            _cinemachineTargetYaw += _look.x * deltaTimeMultiplier * lookSensitivity;
-            _cinemachineTargetPitch -= _look.y * deltaTimeMultiplier * lookSensitivity;
+            _cinemachineTargetYaw += _look.x * lookSensitivity;
+            _cinemachineTargetPitch -= _look.y * lookSensitivity; // 关键修改：反向Y轴
         }
 
+        // 限制角度范围
         _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
         _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
-
+        
+        // 应用旋转
         CameraTarget.transform.rotation = Quaternion.Euler(
             _cinemachineTargetPitch,
             _cinemachineTargetYaw,
             0.0f
         );
-    }
-
-    #if UNITY_WEBGL
-    public void OnWebGLFocus()
-    {
-        _hasFocus = true;
-        webGLTouchPanel.SetActive(false);
-        Cursor.lockState = CursorLockMode.Locked;
-        Application.ExternalEval(@"
-            var canvas = document.getElementById('canvas');
-            canvas.focus();
-            canvas.addEventListener('click', function(){ canvas.focus(); });
-        ");
-    }
-    #endif
-
-    public void OnLook(InputValue value)
-    {
-        #if UNITY_WEBGL
-        if(!_hasFocus) return;
-        #endif
-        
-        _look = value.Get<Vector2>() * 0.1f; // 降低输入灵敏度
     }
 
     private static float ClampAngle(float angle, float min, float max)
@@ -105,4 +63,10 @@ public class jingtou : MonoBehaviour
         if (angle > 360f) angle -= 360f;
         return Mathf.Clamp(angle, min, max);
     }
+
+    public void OnLook(InputValue value)
+    {
+        _look = value.Get<Vector2>();
+    }
+
 }
