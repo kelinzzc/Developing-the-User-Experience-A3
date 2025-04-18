@@ -2140,11 +2140,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fd3dd4ee6b281c40a0e03421870ba37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpAnimation: {fileID: -4980162530228075440, guid: e5901ce40e7bc6f45be465c564aa05e0, type: 3}
-  jumpTransitionTime: 0.1
   moveSpeed: 30
   RotationSmoothTime: 0.1
   jumpForce: 20
+  jumpAnimation: {fileID: -4980162530228075440, guid: e5901ce40e7bc6f45be465c564aa05e0, type: 3}
+  jumpTransitionTime: 0.1
+  webGLTouchPanel: {fileID: 0}
+  webGLTouchButton: {fileID: 0}
 --- !u!114 &584899178
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2158,9 +2160,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CameraTarget: {fileID: 100828532}
+  mainCameraTag: MainCamera
   TopClamp: 70
   BottomClamp: -30
   lookSensitivity: 0.5
+  webGLTouchPanel: {fileID: 100828532}
 --- !u!143 &584899179
 CharacterController:
   m_ObjectHideFlags: 0
