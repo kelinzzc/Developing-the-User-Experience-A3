@@ -7,17 +7,17 @@ using UnityEngine.UI;
 [RequireComponent(typeof(CharacterController))]
 public class juese : MonoBehaviour
 {
-    [Header("移动设置")]
+    [Header("Mobile Settings")]
     public float moveSpeed = 5f;
     public float RotationSmoothTime = 0.1f;
     public float jumpForce = 6f;
 
-    [Header("动画设置")]
+    [Header("Animation Settings")]
     public AnimationClip jumpAnimation;
     [Range(0.01f, 0.3f)]
     public float jumpTransitionTime = 0.1f;
 
-    [Header("WebGL设置")]
+    [Header("WebGL Settings")]
     public GameObject webGLTouchPanel;
     public Button webGLTouchButton;
 

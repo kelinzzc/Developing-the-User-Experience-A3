@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class Collectible : MonoBehaviour
 {
-    [Header("音效设置")]
+    [Header("Sound effect Settings")]
     public AudioClip collectSound;
     
     // 移除Range限制，允许更大值输入
-    [Tooltip("建议值：0.1-10，超过5可能产生削波失真")]
+    [Tooltip("0.1-10")]
     public float volumeScale = 2f; 
 
     void OnTriggerEnter(Collider other)
